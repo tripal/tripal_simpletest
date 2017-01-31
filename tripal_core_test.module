@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * This file contains all Drupal hooks implementations.
+ *
+ * @ingroup tripal_core_test
+ */
+
+/**
+ * Implements hook_tripal_get_schema_name_alter().
+ *
+ * Returns the appropriate Chado schema name if running simpletest.
+ *
+ * @ingroup tripal_core_test
+ */
+function tripal_core_test_tripal_get_schema_name_alter(&$schema_name, $context) {
+
+  if (isset($context['schema'])) {
+    // Check if in test mode.
+    $connection_info = Database::getConnectionInfo();
+    $prefix = $connection_info['default']['prefix']['default'];
+    if ($prefix && preg_match('/^simpletest/', $prefix)) {
+      // Always prefix chado with the simpletest prefix.
+      if ($context['schema'] == 'chado') {
+        $schema_name = $prefix . '_' . $schema_name;
+      }
+    }
+  }
+}

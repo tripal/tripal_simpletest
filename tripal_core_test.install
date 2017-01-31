@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Install Tripal core test module.
+ *
+ * @ingroup tripal_core_test
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * Performs check to see if all required dependencies are met.
+ * In order to run tests on Chado, we need to instanciate Chado in a separate
+ * schema. Then we need to tell Tripal to use the test schema through the hook
+ * hook_tripal_get_schema_name_alter() triggered by tripal_get_schema_name().
+ * Older versions of Tripal don't have this required function.
+ *
+ * @see tripal_get_schema_name()
+ * @see hook_tripal_get_schema_name_alter()
+ *
+ * @ingroup tripal_core_test
+ */
+function tripal_core_test_requirements($phase) {
+ $requirements = array();
+  if ($phase == 'install') {
+    // Make sure we got the appropriate version of Tripal.
+    if (!function_exists('tripal_get_schema_name')) {
+      $requirements['tripal_mc'] = array(
+        'title' => "Tripal",
+        'value' => "7.x-2.x release too old for Tripal Core Test!",
+        'description' => "ERROR: this Tripal 2 release is too old for the Tripal Core Test module. You need the last Tripal 2 release (>= november 2016).",
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+  return $requirements;
+}
