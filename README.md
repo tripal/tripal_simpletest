@@ -16,7 +16,8 @@ INTRODUCTION
 
 This module enables functionnal testing on Tripal extension modules through
 Drupal Simpletest module (Drupal core).
-
+An example of .test file can be found on Tripal Git at:
+https://github.com/tripal/tripal_dt
 
 
 REQUIREMENTS
