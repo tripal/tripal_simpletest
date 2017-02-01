@@ -14,7 +14,7 @@ CONTENTS OF THIS FILE
 INTRODUCTION
 ------------
 
-This module enables functionnal testing on Tripal extension modules through
+This module enables functional testing on Tripal extension modules through
 Drupal Simpletest module (Drupal core).
 An example of .test file can be found on Tripal Git at:
 https://github.com/tripal/tripal_dt
@@ -29,6 +29,21 @@ This module requires the following modules:
    The version of Tripal must provide the function tripal_get_schema_name() that
    triggers hook_tripal_get_schema_name_alter() which is not available in older
    releases of Tripal 2.x (before December 2016).
+ * At the time this README is being written, there appear to be an issue in
+   Drupal Core: the simpletest module can't drop PostgreSQL tables in the
+   correct order and it will fail to drop a table if this table is still
+   referenced elsewhere.
+   A workaround is to patch Drupal core file
+   `includes/database/pgsql/schema.inc` so it can drop tables regardless their
+   dependencies, line 348:
+   replace (or comment)
+   ```
+    $this->connection->query('DROP TABLE {' . $table . '}');
+   ```
+   by this
+   ```
+    $this->connection->query('DROP TABLE {' . $table . '} CASCADE');
+   ```
 
 
 INSTALLATION
@@ -40,7 +55,7 @@ INSTALLATION
 
  * IMPORTANT: you don't need to enable this module in order to run tests! It
    should be automatically enabled by tests during testing only. Therefore it is
-   recommanded not to enable this module to avoid side effects.
+   recommended not to enable this module to avoid side effects.
 
 
 USAGE
@@ -53,18 +68,18 @@ and Tripal module activation for you while it will provide the same features as
 the "DrupalWebTestCase" class.
 
 To use this class, you will need to import it into your test using:
-
+```
   module_load_include('php', 'tripal_core_test', 'tripal_test_case');
-
+```
 Note: It should work even if the module tripal_core_test is not enabled.
 
-It is recommanded that you implement only one "public function testXXX()" to
+It is recommended that you implement only one "public function testXXX()" to
 avoid multiple Chado instantiation as each "testXXX" function is run with a new
 clean Chado instance and each instantiation take a lot of time and may cause
 timeouts.
 
 So your test class definition should look something similar to:
-
+```
   module_load_include('php', 'tripal_core_test', 'tripal_test_case');
   class MyTripalModuleTestCase extends TripalTestCase {
   ...
@@ -81,19 +96,19 @@ So your test class definition should look something similar to:
       ...
     }
   }
-
-If you impelment the member function tearDown(), don't forget to call parent
+```
+If you implement the member function tearDown(), don't forget to call parent
 implementation:
-
+```
   public function tearDown() {
     // Do your stuff
     ...
     parent::tearDown();
   }
-
+```
 References:
-https://www.drupal.org/docs/7/testing/simpletest-testing-tutorial-drupal-7
-https://www.drupal.org/docs/7/testing/assertions
+ * https://www.drupal.org/docs/7/testing/simpletest-testing-tutorial-drupal-7
+ * https://www.drupal.org/docs/7/testing/assertions
 
 
 MAINTAINERS
