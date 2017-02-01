@@ -169,13 +169,18 @@ class TripalTestCase extends DrupalWebTestCase {
     if (!$args) {
       $args = array();
     }
-    elseif (!is_array($args)) {
+    else {
+      // Only take in account first argument.
+      $args = $args[0];
+    }
+    // Check argument structure.
+    if (!is_array($args)) {
       // Case when a single module name has been specified as argument.
       $args = array('modules' => array($args));
     }
     // Check if an array of module names has been provided.
     if (isset($args[0])) {
-      $args = array('modules' => array($args));
+      $args = array('modules' => $args);
     }
     // Remove tripal modules for now. They will be enabled later.
     $tripal_modules = array();
