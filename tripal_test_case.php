@@ -88,6 +88,8 @@ class TripalTestCase extends DrupalWebTestCase {
     if ($tripal_modules && !isset($enabled_tripal_modules['tripal_views'])) {
       // Tripal Views is required by other modules and should be enabled first.
       module_enable(array('tripal_views'), TRUE);
+      $this->resetAll();
+      $this->verbose("Enabled module: tripal_views");
       $enabled_tripal_modules['tripal_views'] = 'tripal_views';
       if (isset($tripal_modules['tripal_views'])) {
         unset($tripal_modules['tripal_views']);
@@ -98,6 +100,8 @@ class TripalTestCase extends DrupalWebTestCase {
     if (isset($tripal_modules['tripal_bulk_loader'])
         && !isset($enabled_tripal_modules['tripal_bulk_loader'])) {
       module_enable(array('tripal_bulk_loader'), TRUE);
+      $this->resetAll();
+      $this->verbose("Enabled module: tripal_bulk_loader");
       $enabled_tripal_modules['tripal_bulk_loader'] = 'tripal_bulk_loader';
       if (isset($tripal_modules['tripal_bulk_loader'])) {
         unset($tripal_modules['tripal_bulk_loader']);
@@ -108,6 +112,8 @@ class TripalTestCase extends DrupalWebTestCase {
       // Tripal DB is required by other modules and should be enabled after
       // Tripal Views.
       module_enable(array('tripal_db'), TRUE);
+      $this->resetAll();
+      $this->verbose("Enabled module: tripal_db");
       $enabled_tripal_modules['tripal_db'] = 'tripal_db';
       if (isset($tripal_modules['tripal_db'])) {
         unset($tripal_modules['tripal_db']);
@@ -118,19 +124,23 @@ class TripalTestCase extends DrupalWebTestCase {
     // Tripal DB.
     if ($tripal_modules && !isset($enabled_tripal_modules['tripal_cv'])) {
       module_enable(array('tripal_cv'), TRUE);
+      $this->resetAll();
+      $this->verbose("Enabled module: tripal_cv");
       ob_start();
-      tripal_cv_load_obo_v1_2_id(3, 1);
+      tripal_launch_job();
       $tripal_message = ob_get_clean();
       $enabled_tripal_modules['tripal_cv'] = 'tripal_cv';
       if (isset($tripal_modules['tripal_cv'])) {
         unset($tripal_modules['tripal_cv']);
       }
-      $this->verbose("obo loaded. " . $tripal_message);
+      $this->verbose("Tripal CV installation job run. " . $tripal_message);
     }
 
     // Load other modules if some.
     if ($tripal_modules) {
       module_enable($tripal_modules, TRUE);
+      $this->resetAll();
+      $this->verbose("Enabled modules: " . implode(', ', $tripal_modules));
     }
   }
 
