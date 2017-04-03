@@ -16,8 +16,9 @@ INTRODUCTION
 
 This module enables functional testing on Tripal extension modules through
 Drupal Simpletest module (Drupal core).
-An example of .test file can be found on Tripal Git at:
-https://github.com/tripal/tripal_dt
+Examples of .test file can be found here:
+ * https://github.com/tripal/tripal_dt/blob/master/tripal_dt.test
+ * http://cgit.drupalcode.org/sandbox-guignonv-2789913/tree/brapi.test
 
 
 REQUIREMENTS
@@ -25,7 +26,8 @@ REQUIREMENTS
 
 This module requires the following modules:
 
- * Tripal 7.x-2.x (not tested under 3.x) (http://www.drupal.org/project/tripal)
+ * Tripal >=7.x-2.1 (not tested under 3.x)
+   (http://www.drupal.org/project/tripal)
    The version of Tripal must provide the function tripal_get_schema_name() that
    triggers hook_tripal_get_schema_name_alter() which is not available in older
    releases of Tripal 2.x (before December 2016).
@@ -82,11 +84,26 @@ So your test class definition should look something similar to:
 ```
   module_load_include('php', 'tripal_core_test', 'tripal_test_case');
   class MyTripalModuleTestCase extends TripalTestCase {
-  ...
+    ...
+    public static function getInfo() {
+      return array(
+        'name' => 'Your Functional Tests',
+        'description' => 'Ensure that the extension works properly.',
+        'group' => 'YourTestGroupName',
+      );
+    }
+    ...
     public function setUp() {
-      parent::setUp();
-      // Enable your Tripal module.
-      module_enable(array('tripal_dt'), TRUE);
+      // List of module to enable by default (machine names) *excluding* Tripal
+      // extension modules but including Tripal package modules. You don't need
+      // to take care of dependencies as they are automatically enabled as well.
+      $modules_to_enable = array('module1', 'module2', ...);
+      parent::setUp($modules_to_enable);
+      // Enable your Tripal module(s).
+      module_enable(array('tripal_your_extension'), TRUE);
+      // Apply thoses changes to the test environment.
+      $this->resetAll();
+
       // Add initialization stuff like module settings and Chado data insertion.
       ...
     }
@@ -106,14 +123,26 @@ implementation:
     parent::tearDown();
   }
 ```
+
 References:
  * https://www.drupal.org/docs/7/testing/simpletest-testing-tutorial-drupal-7
  * https://www.drupal.org/docs/7/testing/assertions
 
+To run the tests from the Drupal interface, make sure you enabled simpletest
+(core) module and go to:
+http://www.yourdevsite.com/admin/config/development/testing
+Then select your test and just click "Run tests". It will take time and you may
+have a timeout error but you can proceed to the "error" page and your tests may
+have passed successfully anyway.
+
+To run the tests from the command line, go to your Drupal installation root and
+type:
+php -f scripts/run-tests.sh -- --url http://www.yourdevsite.com/ YourTestGroupName
+ 
 
 MAINTAINERS
 -----------
 
-Current maintainers:
+Current maintainer(s):
 
  * Valentin Guignon (vguignon) - https://www.drupal.org/user/423148

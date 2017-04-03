@@ -84,7 +84,6 @@ class TripalTestCase extends DrupalWebTestCase {
       $tripal_modules = array('tripal_cv' => 'tripal_cv');
     }
 
-
     if ($tripal_modules && !isset($enabled_tripal_modules['tripal_views'])) {
       // Tripal Views is required by other modules and should be enabled first.
       module_enable(array('tripal_views'), TRUE);
