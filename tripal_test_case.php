@@ -2,23 +2,30 @@
 
 /**
  * @file
- * This is the base class for Tripal core and extensions testing. This class
- * handles the auto-installation of Chado and Tripal module activation.
+ * Contains the base class for Tripal core and extensions testing.
  *
  * @see DrupalWebTestCase
  *
- * @ingroup tripal_core_test
+ * @ingroup tripal_simpletest
+ */
+
+/**
+ * Base class for Tripal core and extensions testing.
+ *
+ * This class handles the auto-installation of Chado and Tripal module
+ * activation.
  */
 class TripalTestCase extends DrupalWebTestCase {
 
   /**
    * Tells which Tripal modules have been enabled throw TripalTestCase.
+   *
    * This is an associative array where keys are Tripal module machine names and
    * values are boolean (TRUE enabled).
    *
    * @var array
    */
-  protected $enabled_tripal_modules = array();
+  protected $enabledTripalModules = array();
 
   /**
    * Instanciate a new Chado schema.
@@ -27,10 +34,11 @@ class TripalTestCase extends DrupalWebTestCase {
    *   Chado version to install. The string can be either of the form '1.3' or
    *   'Install Chado v1.3'. Supported Chado versions depend on the Tripal
    *   module version installed.
+   *
    * @return bool
    *   TRUE if Chado has been instantiated.
    *
-   * @ingroup tripal_core_test
+   * @ingroup tripal_simpletest
    */
   protected function initChado($version = 'Install Chado v1.3') {
     // Check Chado version.
@@ -45,7 +53,8 @@ class TripalTestCase extends DrupalWebTestCase {
     $chado_initialized = FALSE;
     try {
       $this->verbose($version);
-      // Capture Tripal outputs otherwise it would raise errors during the tests.
+      // Capture Tripal outputs otherwise it would raise errors during the
+      // tests.
       ob_start();
       tripal_core_install_chado($version);
       $chado_initialized = $GLOBALS["chado_is_installed"];
@@ -71,7 +80,7 @@ class TripalTestCase extends DrupalWebTestCase {
    *   authomatically enabled if needed. Tripal CV additional step (tripal job)
    *   is performed automatically.
    *
-   * @ingroup tripal_core_test
+   * @ingroup tripal_simpletest
    */
   protected function enableTripalModules($modules = array()) {
 
@@ -84,12 +93,12 @@ class TripalTestCase extends DrupalWebTestCase {
       $tripal_modules = array('tripal_cv' => 'tripal_cv');
     }
 
-    if ($tripal_modules && !isset($enabled_tripal_modules['tripal_views'])) {
+    if ($tripal_modules && !isset($this->enabledTripalModules['tripal_views'])) {
       // Tripal Views is required by other modules and should be enabled first.
       module_enable(array('tripal_views'), TRUE);
       $this->resetAll();
       $this->verbose("Enabled module: tripal_views");
-      $enabled_tripal_modules['tripal_views'] = 'tripal_views';
+      $this->enabledTripalModules['tripal_views'] = 'tripal_views';
       if (isset($tripal_modules['tripal_views'])) {
         unset($tripal_modules['tripal_views']);
       }
@@ -97,23 +106,23 @@ class TripalTestCase extends DrupalWebTestCase {
 
     // Tripal Bulk Loader does not require other modules than Tripal Views.
     if (isset($tripal_modules['tripal_bulk_loader'])
-        && !isset($enabled_tripal_modules['tripal_bulk_loader'])) {
+        && !isset($this->enabledTripalModules['tripal_bulk_loader'])) {
       module_enable(array('tripal_bulk_loader'), TRUE);
       $this->resetAll();
       $this->verbose("Enabled module: tripal_bulk_loader");
-      $enabled_tripal_modules['tripal_bulk_loader'] = 'tripal_bulk_loader';
+      $this->enabledTripalModules['tripal_bulk_loader'] = 'tripal_bulk_loader';
       if (isset($tripal_modules['tripal_bulk_loader'])) {
         unset($tripal_modules['tripal_bulk_loader']);
       }
     }
 
-    if ($tripal_modules && !isset($enabled_tripal_modules['tripal_db'])) {
+    if ($tripal_modules && !isset($this->enabledTripalModules['tripal_db'])) {
       // Tripal DB is required by other modules and should be enabled after
       // Tripal Views.
       module_enable(array('tripal_db'), TRUE);
       $this->resetAll();
       $this->verbose("Enabled module: tripal_db");
-      $enabled_tripal_modules['tripal_db'] = 'tripal_db';
+      $this->enabledTripalModules['tripal_db'] = 'tripal_db';
       if (isset($tripal_modules['tripal_db'])) {
         unset($tripal_modules['tripal_db']);
       }
@@ -121,14 +130,14 @@ class TripalTestCase extends DrupalWebTestCase {
 
     // Tripal CV is required by other modules and should be enabled after
     // Tripal DB.
-    if ($tripal_modules && !isset($enabled_tripal_modules['tripal_cv'])) {
+    if ($tripal_modules && !isset($this->enabledTripalModules['tripal_cv'])) {
       module_enable(array('tripal_cv'), TRUE);
       $this->resetAll();
       $this->verbose("Enabled module: tripal_cv");
       ob_start();
       tripal_launch_job();
       $tripal_message = ob_get_clean();
-      $enabled_tripal_modules['tripal_cv'] = 'tripal_cv';
+      $this->enabledTripalModules['tripal_cv'] = 'tripal_cv';
       if (isset($tripal_modules['tripal_cv'])) {
         unset($tripal_modules['tripal_cv']);
       }
@@ -169,7 +178,7 @@ class TripalTestCase extends DrupalWebTestCase {
    *
    * @see DrupalWebTestCase::setUp()
    *
-   * @ingroup tripal_core_test
+   * @ingroup tripal_simpletest
    */
   public function setUp() {
 
@@ -205,9 +214,9 @@ class TripalTestCase extends DrupalWebTestCase {
       }
     }
 
-    // Make sure we enable 'tripal_core_test' module in order to be able to work
-    // with a testing Chado instance.
-    $modules[] = 'tripal_core_test';
+    // Make sure we enable 'tripal_simpletest' module in order to be able to
+    // work with a testing Chado instance.
+    $modules[] = 'tripal_simpletest';
     parent::setUp($modules);
 
     // Check if Chado should be instantiated.
@@ -224,9 +233,9 @@ class TripalTestCase extends DrupalWebTestCase {
       $chado_initialized = $this->initChado();
     }
 
-    // Remove Tripal core test module that has already been enabled before.
-    if (isset($tripal_modules['tripal_core_test'])) {
-      unset($tripal_modules['tripal_core_test']);
+    // Remove Tripal SimpleTest module that has already been enabled before.
+    if (isset($tripal_modules['tripal_simpletest'])) {
+      unset($tripal_modules['tripal_simpletest']);
     }
 
     // Check we can run tests.
@@ -242,7 +251,7 @@ class TripalTestCase extends DrupalWebTestCase {
   /**
    * Remove Chado test instance.
    *
-   * @ingroup tripal_core_test
+   * @ingroup tripal_simpletest
    */
   public function tearDown() {
     db_query("DROP SCHEMA " . $this->databasePrefix . '_chado CASCADE;');

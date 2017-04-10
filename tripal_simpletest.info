@@ -1,9 +1,7 @@
-name = Tripal Core Test
+name = Tripal SimpleTest
 description = This module is required to run Drupal test on Tripal modules.
 core = 7.x
-project = tripal_core_test
 package = Tripal
-version = 7.x-2.1
 dependencies[] = tripal_core
 
 files[] = tripal_test_case.php

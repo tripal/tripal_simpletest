@@ -2,9 +2,9 @@
 
 /**
  * @file
- * Install Tripal core test module.
+ * Install Tripal SimpleTest module.
  *
- * @ingroup tripal_core_test
+ * @ingroup tripal_simpletest
  */
 
 /**
@@ -19,17 +19,17 @@
  * @see tripal_get_schema_name()
  * @see hook_tripal_get_schema_name_alter()
  *
- * @ingroup tripal_core_test
+ * @ingroup tripal_simpletest
  */
-function tripal_core_test_requirements($phase) {
+function tripal_simpletest_requirements($phase) {
  $requirements = array();
   if ($phase == 'install') {
     // Make sure we got the appropriate version of Tripal.
     if (!function_exists('tripal_get_schema_name')) {
-      $requirements['tripal_mc'] = array(
+      $requirements['tripal_simpletest'] = array(
         'title' => "Tripal",
         'value' => "7.x-2.x release too old for Tripal Core Test!",
-        'description' => "ERROR: this Tripal 2 release is too old for the Tripal Core Test module. You need the last Tripal 2 release (>= november 2016).",
+        'description' => "ERROR: this Tripal 2 release is too old for the Tripal SimpleTest module. You need the last Tripal 2.1 (or a 2.x-dev released after november 2016).",
         'severity' => REQUIREMENT_ERROR,
       );
     }

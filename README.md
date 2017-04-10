@@ -1,5 +1,5 @@
-Tripal Core Test module
-=======================
+Tripal SimpleTest module
+========================
 
 CONTENTS OF THIS FILE
 ---------------------
@@ -71,9 +71,9 @@ the "DrupalWebTestCase" class.
 
 To use this class, you will need to import it into your test using:
 ```
-  module_load_include('php', 'tripal_core_test', 'tripal_test_case');
+  module_load_include('php', 'tripal_simpletest', 'tripal_test_case');
 ```
-Note: It should work even if the module tripal_core_test is not enabled.
+Note: It should work even if the module tripal_simpletest is not enabled.
 
 It is recommended that you implement only one "public function testXXX()" to
 avoid multiple Chado instantiation as each "testXXX" function is run with a new
@@ -82,7 +82,7 @@ timeouts.
 
 So your test class definition should look something similar to:
 ```
-  module_load_include('php', 'tripal_core_test', 'tripal_test_case');
+  module_load_include('php', 'tripal_simpletest', 'tripal_test_case');
   class MyTripalModuleTestCase extends TripalTestCase {
     ...
     public static function getInfo() {
@@ -137,7 +137,7 @@ have passed successfully anyway.
 
 To run the tests from the command line, go to your Drupal installation root and
 type:
-php -f scripts/run-tests.sh -- --url http://www.yourdevsite.com/ YourTestGroupName
+php -f scripts/run-tests.sh -- --url http://www.yourdevsite.com/ YourTestGrpName
  
 
 MAINTAINERS

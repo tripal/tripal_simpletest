@@ -4,7 +4,7 @@
  * @file
  * This file contains all Drupal hooks implementations.
  *
- * @ingroup tripal_core_test
+ * @ingroup tripal_simpletest
  */
 
 /**
@@ -12,9 +12,9 @@
  *
  * Returns the appropriate Chado schema name if running simpletest.
  *
- * @ingroup tripal_core_test
+ * @ingroup tripal_simpletest
  */
-function tripal_core_test_tripal_get_schema_name_alter(&$schema_name, $context) {
+function tripal_simpletest_tripal_get_schema_name_alter(&$schema_name, $context) {
 
   if (isset($context['schema'])) {
     // Check if in test mode.
